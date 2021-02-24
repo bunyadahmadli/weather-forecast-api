@@ -11,12 +11,15 @@ from .utils import get_lat_lon,get_wheather_forecast
 
 
 
+
 class WeatherAPIView(GenericAPIView):
+    
     serializer_class = WeatherForecastSerializer
     permission_classes = [IsAuthenticated,]
 
     def get(self,request, location, *args,**kwargs):
-        weather = cache.get(location,version=3)
+        
+        weather = cache.get(location)
         
         if weather:
             data = json.loads(weather)
@@ -24,13 +27,14 @@ class WeatherAPIView(GenericAPIView):
             return Response(weather)
        
         weather = WeatherForecast.objects.filter(location = location,created_at__date= date.today()).first()
+        breakpoint()
         if weather:
             
             serializer = WeatherForecastSerializer(weather)
             data = json.dumps(serializer.data)
             
-            cachce_key = cache.set(location,data,60*60)
-            
+            cachce_key = cache.set(location,data,timeout=60*60*3)
+            print(location)
             return Response(serializer.data)
 
         else:
@@ -45,10 +49,10 @@ class WeatherAPIView(GenericAPIView):
                 highest_temperature_next_week =data["week_max_temp"]
             )
             serializer = WeatherForecastSerializer(weather)
+           
             data = json.dumps(serializer.data)
             
-            cachce_key = cache.set(location,data,60*60)
-            
+            cachce_key = cache.add(location, data,timeout=60*60*4)
             
             return Response(serializer.data)
 

@@ -38,11 +38,16 @@ SIMPLE_JWT={
     'ACCESS_TOKEN_LIFETIME':timedelta(minutes=15)
 }
 SESSIONS_ENGINE='django.contrib.sessions.backends.cache'
+
+
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+"default": {
+    "BACKEND": "django_redis.cache.RedisCache",
+    "LOCATION": "redis://redis:6379/1",
+    "OPTIONS": {
+        "CLIENT_CLASS": "django_redis.client.DefaultClient",
     }
+  }
 }
 
 
