@@ -147,3 +147,6 @@ dmypy.json
 
 # profiling data
 .prof
+
+migrations/
+.vscode
